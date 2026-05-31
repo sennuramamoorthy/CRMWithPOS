@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-brand: #2563eb;
+  --color-brand-fg: #ffffff;
+}
+
+html, body, #root { height: 100%; }

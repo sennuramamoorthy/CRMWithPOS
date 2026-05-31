@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+.env.local
+.env.prod
+
+# Node
+node_modules/
+dist/
+build/
+.vite/
+*.log
+npm-debug.log*
+
+# TypeScript build artifacts (frontend is .tsx; .js next to .tsx is stale tsc output)
+frontend/src/**/*.js
+*.tsbuildinfo
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+
+# Local data
+backend/uploads/
+!backend/uploads/.gitkeep
+*.sqlite
+*.db
+
+# Coverage / pytest
+.pytest_cache/
+.coverage
+htmlcov/

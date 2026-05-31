@@ -1,0 +1,44 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-crm}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+      POSTGRES_DB: ${POSTGRES_DB:-crm}
+    volumes:
+      - crm_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-crm} -d $${POSTGRES_DB:-crm}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    image: ${REGISTRY:-ghcr.io/your-org}/crm-backend:${IMAGE_TAG:-latest}
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-crm}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-crm}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      JWT_EXPIRES_MINUTES: ${JWT_EXPIRES_MINUTES:-720}
+      CORS_ORIGINS: ${CORS_ORIGINS:-https://app.example.com}
+      UPLOAD_DIR: /app/uploads
+    volumes:
+      - crm_uploads:/app/uploads
+    ports:
+      - "${BACKEND_PORT:-8000}:8000"
+
+  frontend:
+    image: ${REGISTRY:-ghcr.io/your-org}/crm-frontend:${IMAGE_TAG:-latest}
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "${FRONTEND_PORT:-80}:80"
+
+volumes:
+  crm_pg:
+  crm_uploads:
